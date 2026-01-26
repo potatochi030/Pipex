@@ -4,7 +4,7 @@ void	*safty_check(char *ptr)
 {
 	if (ptr == NULL)
 	{
-		perror("Malloc ERROR:");
+		perror("Path Malloc Error");
 		exit(-1);
 	}
 	return (ptr);
@@ -17,7 +17,7 @@ char	**get_cmd_args(char *cmd)
 	args = ft_split(cmd, ' ');
 	if (!args)
 	{
-		perror("Malloc ERROR:");
+		perror("Arguments Malloc Error");
 		exit (-1);
 	}
 	return (args);
@@ -35,7 +35,9 @@ char	*get_path(char **envp)
 		j = 0;
 		while (envp[i][j] && envp[i][j] != '=')
 			j++;
-		variable = safty_check(ft_substr(envp[i], 0, j));
+		variable = ft_substr(envp[i], 0, j);
+		if (!variable)
+			return (NULL);
 		if (ft_strncmp(variable, "PATH", 4) == 0)
 		{
 			free(variable);
@@ -49,48 +51,44 @@ char	*get_path(char **envp)
 
 char	*get_cmd_path(char *cmd, char **envp)
 {
-	int		i;
 	char	**search;
-	char	*prefix;
+	char	*path;
 	char	*cmd_path;
 
 	if (cmd == NULL)
 		return (NULL);
 	if (access(cmd, F_OK | X_OK) == 0)
 		return (ft_strdup(cmd));
-	search = ft_split(get_path(envp), ':');
-	i = 0;
-	while (search && search[i])
-	{
-		prefix = ft_strjoin(search[i], "/");
-		cmd_path = ft_strjoin(prefix, cmd);
-		free(prefix);
-		if (access(cmd_path, F_OK | X_OK) == 0)
-			return (cmd_path);
-		free(cmd_path);
-		i++;
-	}
-	if (search)
-		free_me_from_agony(search);
-	return (NULL);
+	path = get_path(envp);
+	if (!path)
+		return (NULL);
+	search = ft_split(path, ':');
+	if (!search)
+		return (NULL);
+	cmd_path = search_path(search, cmd);	
+	free_me_from_agony(search);
+	return (cmd_path);
 }
 
 void	exec_cmd(char *cmd, char **envp)
 {
-	char	*path;
+	char	*path;	
 	char	**args;
 
+	(void)cmd;
 	args = get_cmd_args(cmd);
+	if (!args)
+		exit(-1);
 	path = get_cmd_path(args[0], envp);
 	if (path == NULL)
 	{
 		free_me_from_agony(args);
-		perror("Malloc ERROR: ");
+		perror("Command Malloc Error");
 		exit(-1);
 	}
 	if (execve(path, args, envp) == -1)
 	{
-		perror("Execve ERROR: ");
+		perror("Execve Error");
 		free(path);
 		free_me_from_agony(args);
 		exit(-1);

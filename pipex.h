@@ -16,5 +16,6 @@ char	*get_PATH(char **envp);
 void	exec_cmd(char *cmd, char **envp);
 void	first_cmd(char **argv, int pipefd[2], char **envp);
 void	second_cmd(char **argv, int pipefd[2], char **envp);
+char    *search_path(char **search, char *cmd);
 
 #endif

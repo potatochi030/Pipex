@@ -13,7 +13,7 @@ void    first_cmd(char  **argv, int  pipefd[2], char **envp)
     dup2(in_file, 0);
     dup2(pipefd[1], 1);
     close(pipefd[0]);
-    exec_cmd(argv[3], envp);
+    exec_cmd(argv[2], envp);
 }
 
 void    second_cmd(char  **argv, int  pipefd[2], char **envp)

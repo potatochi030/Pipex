@@ -23,27 +23,54 @@ char    **get_cmd_args(char *cmd)
     return (args);
 }
 
-char    *get_cmd_path (char *cmd)
+char    *get_PATH(char **envp)
 {
     int     i;
-    char    *search[] = {"/bin/", "/usr/bin/", "/usr/local/bin/", NULL};
+    int     j;
+    char    *variable;
+
+    i = 0;
+    while (envp[i])
+    {
+        j = 0;
+        while (envp[i][j] && envp[i][j] != '=')
+            j++;
+        variable = safty_check(ft_substr(envp[i], 0, j));
+        if (ft_strncmp(variable, "PATH", 4) == 0)
+        {
+            free(variable);
+            return (envp[i] + j + 1);
+        }
+        free(variable);
+        i++;
+    }
+    return (NULL);
+}
+char    *get_cmd_path (char *cmd, char **envp)
+{
+    int     i;
+    char    **search;
+    char    *prefix;
     char    *cmd_path;
 
-    i  = 0;
     if (cmd == NULL)
         return (NULL);
     if (access(cmd, F_OK | X_OK) == 0)
-        return (safty_check(strdup(cmd)));
-    while (search[i])
+        return (ft_strdup(cmd));
+    search = ft_split(get_PATH(envp), ':');
+    i  = 0;
+    while (search && search[i])
     {
-        cmd_path = safty_check(ft_strjoin(search[i], cmd));
+        prefix = ft_strjoin(search[i], "/");
+        cmd_path = ft_strjoin(prefix, cmd);
+        free(prefix);
         if (access(cmd_path, F_OK | X_OK) == 0)
-        {
             return (cmd_path);
-        }
         free(cmd_path);
         i++;
     }
+    if (search)
+        free_me_from_agony(search);
     return (NULL);
 }
 
@@ -52,8 +79,14 @@ void    exec_cmd(char *cmd, char **envp)
     char    *path;
     char    **args;
 
-    path = get_cmd_path(cmd);
     args = get_cmd_args(cmd);
+    path = get_cmd_path(args[0], envp);
+    if (path == NULL)
+    {
+        free_me_from_agony(args);
+        perror("Malloc ERROR: ");
+        exit(-1);
+    }
     if (execve(path, args, envp) == -1)
     {
         perror("Execve ERROR: ");

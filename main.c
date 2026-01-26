@@ -4,10 +4,10 @@ void    first_cmd(char  **argv, int  pipefd[2], char **envp)
 {
     int     in_file;
 
-    in_file = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC);
+    in_file = open(argv[1], O_RDONLY, 0777);
     if (in_file == -1)
     {
-        perror("File ERROR: ");
+        perror("File ERROR#1: ");
         exit(-1);
     }
     dup2(in_file, 0);
@@ -19,10 +19,10 @@ void    first_cmd(char  **argv, int  pipefd[2], char **envp)
 void    second_cmd(char  **argv, int  pipefd[2], char **envp)
 {
     int     out_file;
-    out_file = open(argv[4], O_RDONLY);
+    out_file = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
     if (out_file == -1)
     {
-        perror("File ERROR: ");
+        perror("File ERROR#2: ");
         exit(-1);
     }
     dup2(out_file, 1);

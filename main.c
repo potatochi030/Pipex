@@ -63,6 +63,14 @@ void	second_cmd(char **argv, int pipefd[2], char **envp)
 	exec_cmd(argv[3], envp);
 }
 
+static void	wait_till_end(void)
+{
+	wait(NULL);
+	wait(NULL);	
+	wait(NULL);	
+	wait(NULL);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	int		pipefd[2];
@@ -86,7 +94,6 @@ int	main(int argc, char **argv, char **envp)
 		first_cmd(argv, pipefd, envp);
 	if (pid1 && pid2)
 		second_cmd(argv, pipefd, envp);
-	wait(&pid2);
-	wait(&pid1);
+	wait_till_end();
 	return (0);
 }

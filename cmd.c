@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aoqdeh <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/27 19:51:18 by aoqdeh            #+#    #+#             */
+/*   Updated: 2026/01/27 19:52:29 by aoqdeh           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	*safty_check(char *ptr)
@@ -65,7 +77,7 @@ char	*get_cmd_path(char *cmd, char **envp)
 	search = ft_split(path, ':');
 	if (!search)
 		return (NULL);
-	cmd_path = search_path(search, cmd);	
+	cmd_path = search_path(search, cmd);
 	free_me_from_agony(search);
 	return (cmd_path);
 }
@@ -75,7 +87,6 @@ void	exec_cmd(char *cmd, char **envp)
 	char	*path;	
 	char	**args;
 
-	(void)cmd;
 	args = get_cmd_args(cmd);
 	if (!args)
 		exit(-1);

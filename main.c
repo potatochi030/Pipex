@@ -48,9 +48,17 @@ void	first_cmd(char **argv, int pipefd[2], char **envp)
 		perror("Input File Error");
 		final_exit(pipefd, 0);
 	}
+	if (dup2(in_file, 0) == -1)
+	{
+		close(in_file);
+		final_exit(pipefd, 0);
+	}
+	if (dup2(pipefd[1], 1) == -1)
+	{
+		close(in_file);
+		final_exit(pipefd, 0);
+	}
 	close(pipefd[0]);
-	dup2(in_file, 0);
-	dup2(pipefd[1], 1);
 	close(in_file);
 	close(pipefd[1]);
 	exec_cmd(argv[2], envp);
@@ -66,9 +74,17 @@ void	second_cmd(char **argv, int pipefd[2], char **envp)
 		perror("Output File Error");
 		final_exit(pipefd, 0);
 	}
+	if (dup2(out_file, 1) == -1)
+	{
+		close(out_file);
+		final_exit(pipefd, 0);
+	}
+	if (dup2(pipefd[0], 0) == -1)
+	{
+		close(out_file);
+		final_exit(pipefd, 0);
+	}
 	close(pipefd[1]);
-	dup2(out_file, 1);
-	dup2(pipefd[0], 0);
 	close(out_file);
 	close(pipefd[0]);
 	exec_cmd(argv[3], envp);
